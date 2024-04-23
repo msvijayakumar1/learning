@@ -95,6 +95,24 @@ def delete_author(id):
             return jsonify({"message":f"Something went wrong:{er}"}), 500
     else:
         return jsonify({"message":"Please connect database"}), 500
+    
+@app.route("/getEmp_Salary/<int:id>", methods=["GET"])
+def getSalary(id):
+    if conn and cursor:
+        try:
+            cursor.execute("SELECT Salary,EmployeeInfo.EmpFname FROM EmployeeSalary INNER JOIN EmployeeInfo ON EmployeeInfo.EmpID=EmployeeSalary.Id WHERE EmployeeInfo.EmpID=?",(id))
+            list=cursor.fetchall()
+            data=[]
+            for i in list:
+                res={"Salary":i[0],"Emp_Name":i[1]}
+                data.append(res)
+            print(data)
+            return jsonify({"data":data}),200
+        except pyodbc.Error as er:
+            print(f"error:{er}")
+            return jsonify({"message":f"Something went wrong:{er}"}), 500
+    else:
+        return jsonify({"message":"Please connect database"}), 500
 
 if __name__ == '__main__':
     app.run(host="localhost", port=5400, debug=True)
